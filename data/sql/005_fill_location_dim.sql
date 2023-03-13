@@ -1,0 +1,18 @@
+INSERT OR IGNORE INTO location_dim (id, name) values ('faro', 'Faro');
+INSERT OR IGNORE INTO location_dim (id, name) values ('beja', 'Beja');
+INSERT OR IGNORE INTO location_dim (id, name) values ('setubal', 'Setúbal');
+INSERT OR IGNORE INTO location_dim (id, name) values ('evora', 'Évora');
+INSERT OR IGNORE INTO location_dim (id, name) values ('lisboa', 'Lisboa');
+INSERT OR IGNORE INTO location_dim (id, name) values ('portalegre', 'Portalegre');
+INSERT OR IGNORE INTO location_dim (id, name) values ('santarem', 'Santarém');
+INSERT OR IGNORE INTO location_dim (id, name) values ('leiria', 'Leiria');
+INSERT OR IGNORE INTO location_dim (id, name) values ('castelo_branco', 'Castelo Branco');
+INSERT OR IGNORE INTO location_dim (id, name) values ('coimbra', 'Coimbra');
+INSERT OR IGNORE INTO location_dim (id, name) values ('guarda', 'Guarda');
+INSERT OR IGNORE INTO location_dim (id, name) values ('viseu', 'Viseu');
+INSERT OR IGNORE INTO location_dim (id, name) values ('aveiro', 'Aveiro');
+INSERT OR IGNORE INTO location_dim (id, name) values ('porto', 'Porto');
+INSERT OR IGNORE INTO location_dim (id, name) values ('braga', 'Braga');
+INSERT OR IGNORE INTO location_dim (id, name) values ('vila_real', 'Vila Real');
+INSERT OR IGNORE INTO location_dim (id, name) values ('braganca', 'Bragança');
+INSERT OR IGNORE INTO location_dim (id, name) values ('viana_castelo', 'Viana do Castelo');
