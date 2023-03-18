@@ -5,6 +5,8 @@ from typing import Self, Optional
 import httpx
 from enum import StrEnum
 import logging
+import chardet
+from sqlite_utils import Database
 
 logger = logging.getLogger(__name__)
 
@@ -23,22 +25,29 @@ class ArquivoApiPath(StrEnum):
     NO_FRAME_REPLAY = "/noFrame/replay"
 
 
+def autodetect(content):
+    return chardet.detect(content).get("encoding")
+
+
 class ArquivoClient:
 
     DEFAULT_WAIT = 20
 
     client: httpx.AsyncClient
     wait_until: Optional[int]
+    http_cache_db: Database
 
-    def __init__(self):
+    def __init__(self, _http_cache_db: Database = None):
         self.client = httpx.AsyncClient(
             timeout=httpx.Timeout(120),
             base_url=ArquivoApiPath.BASE_URL,
             follow_redirects=True,
             event_hooks={"request": [log_request], "response": [log_response]},
+            default_encoding=autodetect,
         )
         self.__semaphore = asyncio.Semaphore(20)
         self.wait_until_lock = asyncio.Lock()
+        self.http_cache_db = _http_cache_db
 
     async def __aenter__(self) -> Self:
         return self
@@ -49,9 +58,18 @@ class ArquivoClient:
     async def close(self):
         await self.client.aclose()
 
+    def cache_response(self, resp: httpx.Response):
+        if self.http_cache_db:
+            self.http_cache_db["requests"].insert(
+                {"url": str(resp.url), "content": resp.text},
+                pk="url",
+                ignore=True
+            )
+
     async def handle_resp(self, resp: httpx.Response):
         try:
             resp.raise_for_status()
+            self.cache_response(resp)
             return resp
         except httpx.HTTPStatusError as status_error:
             if status_error.response.status_code == httpx.codes.TOO_MANY_REQUESTS:

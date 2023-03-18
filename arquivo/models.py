@@ -25,7 +25,7 @@ class VersionEntry(BaseModel):
 
     @property
     def dt(self):
-        dt = pendulum.from_format(self.tstamp, 'YYYYMMDDHHmmss')
+        dt = pendulum.from_format(self.tstamp, "YYYYMMDDHHmmss")
         return dt
 
     def __hash__(self):

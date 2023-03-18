@@ -40,7 +40,9 @@ class Fact(BaseModel):
     id: str | None = None
     content: dict
     source_url: str
+    arquivo_url: str
     canonical_url: str
+    screenshot_url: str | None
     version: str
     date_id: int
     category_id: str
@@ -48,3 +50,7 @@ class Fact(BaseModel):
     location_id: str | None = None
 
 
+class HighRotationMusic(BaseModel):
+
+    artist: str
+    song: str

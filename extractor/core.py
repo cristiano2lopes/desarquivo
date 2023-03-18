@@ -29,6 +29,8 @@ class Extractor(ABC):
         self.repository = repository
         self.params = params
 
+    applicable_time_span: tuple[int, int] = None
+
     async def extract(self) -> Generator[Fact, None, None]:
         raise NotImplementedError("Abstract Method")
 
@@ -51,6 +53,4 @@ class ExtractionJob:
 
         for extractor in extractors:
             facts = [fact async for fact in extractor.extract()]
-            self.repo.insert_fact(facts[0])
-            self.repo.insert_facts(facts)
             self.repo.insert_facts(facts)

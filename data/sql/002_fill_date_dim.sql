@@ -1,7 +1,7 @@
 DROP VIEW IF EXISTS date_span;
 CREATE TEMP VIEW IF NOT EXISTS date_span AS 
 WITH RECURSIVE dates(date) AS (
-  VALUES('2007-01-01')
+  VALUES('2003-01-01')
   UNION ALL
   SELECT date(date, '+1 day')
   FROM dates

@@ -26,6 +26,8 @@ CREATE TABLE fact (
     id TEXT PRIMARY KEY,
     content TEXT NOT NULL,
     source_url TEXT NOT NULL,
+    arquivo_url TEXT NOT NULL,
+    screenshot_url TEXT,
     canonical_url TEXT NOT NULL,
     inserted_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at DATETIME,

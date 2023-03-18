@@ -10,7 +10,7 @@ from data.models import *
 logger = logging.getLogger(__name__)
 
 
-class DbContextManager:
+class DesarquivoDb:
     def __init__(self, recreate_db: bool):
         self.recreate_db = recreate_db
 
@@ -24,9 +24,32 @@ class DbContextManager:
         if self.recreate_db:
             self.db.enable_wal()
             self.db.execute("PRAGMA foreign_keys = ON;")
+            self.db.execute("PRAGMA auto_vacuum = FULL;")
             for p in sorted(Path("./data/sql/").glob("*.sql")):
                 with open(p, "r") as file:
                     self.db.executescript(file.read())
+        return self.db
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.db.close()
+
+
+class HttpCacheDb:
+    def __init__(self, recreate_db: bool):
+        self.recreate_db = recreate_db
+
+    def __enter__(self):
+        def __tracer(sql, params):
+            logger.debug("SQL: %s - params: %s", sql, params)
+
+        self.db = Database(
+            f"db_files/http_requests.db", tracer=__tracer, recreate=self.recreate_db
+        )
+        if self.recreate_db:
+            self.db.enable_wal()
+            self.db.execute("PRAGMA foreign_keys = ON;")
+            self.db.execute("PRAGMA auto_vacuum = FULL;")
+
         return self.db
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -92,6 +115,6 @@ class Repository:
         previous_count = self.db.table("fact").count
         data = (fact.dict(exclude={"id"}) for fact in facts)
         self.db.table("fact").insert_all(
-            data, hash_id="id", hash_id_columns=("content",), replace=True
+            data, hash_id="id", hash_id_columns=("content", "date_id"), replace=True
         )
         return self.db.table("fact").count - previous_count

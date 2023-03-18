@@ -73,7 +73,7 @@ class Arquivo:
                 resp = await self.__client.fetch_url(version_response.next_page)
                 version_response = VersionsResponse(**resp.json())
         except Exception as e:
-            logger.error(f"Fetch url versions {url} {since}-{until}")
+            logger.exception(f"Fetch url versions {url} {since}-{until}")
 
         all_data = itertools.chain(
             *[resp.response_items for resp in all_version_responses]
