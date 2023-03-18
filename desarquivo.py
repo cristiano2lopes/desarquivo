@@ -32,9 +32,7 @@ def cli(day_month, start_year, end_year, recreate_db):
     with DbContextManager(recreate_db) as _db:
         extractors = setup_extractors()
         month, day = day_month
-        params = ExtractionParams(
-            month, day, start_year, end_year, extractors
-        )
+        params = ExtractionParams(month, day, start_year, end_year, extractors)
         asyncio.run(run(params, _db))
 
 

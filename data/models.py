@@ -1,5 +1,17 @@
 from pydantic import BaseModel
 
+from enum import Enum
+
+
+class CategoryID(str, Enum):
+    music_high_rotation = "music_high_rotation"
+    cinema_on_theaters = "cinema_on_theaters"
+
+
+class SourceID(str, Enum):
+    desarquivo = "desarquivo"
+    manual = "manual"
+
 
 class LocationDim(BaseModel):
     id: str
@@ -34,3 +46,5 @@ class Fact(BaseModel):
     category_id: str
     source_id: str
     location_id: str | None = None
+
+

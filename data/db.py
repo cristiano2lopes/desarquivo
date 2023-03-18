@@ -80,22 +80,18 @@ class Repository:
             return None
 
     def insert_fact(self, fact: Fact) -> str:
-        data = fact.dict(exclude={'id'})
-        last_pk = self.db.table("fact").insert(
-            data,
-            hash_id="id",
-            hash_id_columns=("content", ),
-            replace=True
-        ).last_pk
+        data = fact.dict(exclude={"id"})
+        last_pk = (
+            self.db.table("fact")
+            .insert(data, hash_id="id", hash_id_columns=("content",), replace=True)
+            .last_pk
+        )
         return last_pk
 
     def insert_facts(self, facts: Iterable[Fact]) -> int:
         previous_count = self.db.table("fact").count
-        data = (fact.dict(exclude={'id'}) for fact in facts)
+        data = (fact.dict(exclude={"id"}) for fact in facts)
         self.db.table("fact").insert_all(
-            data,
-            hash_id="id",
-            hash_id_columns=("content",),
-            replace=True
+            data, hash_id="id", hash_id_columns=("content",), replace=True
         )
         return self.db.table("fact").count - previous_count

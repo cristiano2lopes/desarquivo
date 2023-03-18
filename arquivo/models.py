@@ -1,4 +1,6 @@
 from typing import List, Optional
+
+import pendulum
 from pydantic import BaseModel
 
 
@@ -20,6 +22,11 @@ class VersionEntry(BaseModel):
     collection: str
     offset: int
     statusCode: int
+
+    @property
+    def dt(self):
+        dt = pendulum.from_format(self.tstamp, 'YYYYMMDDHHmmss')
+        return dt
 
     def __hash__(self):
         return hash((type(self),) + tuple(self.__dict__.values()))

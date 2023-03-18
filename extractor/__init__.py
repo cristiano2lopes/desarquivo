@@ -3,7 +3,6 @@ from .radio_comercial import *
 
 
 def setup_extractors():
-
     def get_subclasses(cls):
         for subclass in cls.__subclasses__():
             yield from get_subclasses(subclass)

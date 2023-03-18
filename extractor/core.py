@@ -22,8 +22,9 @@ class ExtractionParams:
 
 
 class Extractor(ABC):
-
-    def __init__(self, arquivo: Arquivo, repository: Repository, params: ExtractionParams):
+    def __init__(
+        self, arquivo: Arquivo, repository: Repository, params: ExtractionParams
+    ):
         self.arquivo = arquivo
         self.repository = repository
         self.params = params
@@ -45,8 +46,7 @@ class ExtractionJob:
 
         extractors = (
             extractor_cls(self.arquivo, self.repo, self.params)
-            for extractor_cls
-            in self.params.extractors
+            for extractor_cls in self.params.extractors
         )
 
         for extractor in extractors:

@@ -11,6 +11,7 @@ pendulum = "^2.1.2"
 sqlite-utils = "^3.26"
 httpx = "^0.23.3"
 pydantic = "^1.10.5"
+pyquery = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 debugpy = "^1.6.0"

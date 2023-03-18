@@ -16,12 +16,18 @@ def remove_error_status_codes(data: Iterable[VersionEntry]) -> Iterable[VersionE
     return filter(lambda e: 200 <= e.statusCode < 400, data)
 
 
+def remove_redirects_status_codes(
+    data: Iterable[VersionEntry],
+) -> Iterable[VersionEntry]:
+    return filter(lambda e: 200 <= e.statusCode < 300, data)
+
+
 def remove_entries_close_in_time(
-        data: Iterable[VersionEntry],
+    data: Iterable[VersionEntry],
 ) -> Iterable[VersionEntry]:
     return map(
         next,
-        map(operator.itemgetter(1), itertools.groupby(data, lambda e: e.tstamp[:-2])),
+        map(operator.itemgetter(1), itertools.groupby(data, lambda e: e.tstamp[:-4])),
     )
 
 
@@ -45,7 +51,7 @@ class Arquivo:
             logger.exception("Fetch archived version entry")
 
     async def fetch_url_versions(
-            self, url: str, since: str, until: str, retries: int = 3
+        self, url: str, since: str, until: str, retries: int = 3
     ) -> Iterable[VersionEntry]:
         all_version_responses = []
         try:
@@ -54,9 +60,7 @@ class Arquivo:
             if "response_items" in json_content:
                 version_response = VersionsResponse(**resp.json())
             elif retries > 0:
-                logger.warning(
-                    f"Retry ({retries}): {since} {until} {resp.request.url}"
-                )
+                logger.warning(f"Retry ({retries}): {since} {until} {resp.request.url}")
                 return await self.fetch_url_versions(url, since, until, retries - 1)
             else:
                 logger.error(
@@ -74,4 +78,9 @@ class Arquivo:
         all_data = itertools.chain(
             *[resp.response_items for resp in all_version_responses]
         )
-        return pipe(all_data, remove_error_status_codes, remove_entries_close_in_time)
+        return pipe(
+            all_data,
+            remove_error_status_codes,
+            remove_redirects_status_codes,
+            remove_entries_close_in_time,
+        )
