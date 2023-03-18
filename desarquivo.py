@@ -21,17 +21,24 @@ async def run(params: ExtractionParams, _db, _http_cache_db):
 
 
 @click.command()
-@click.option("-dm", "--day-month", required=True, callback=validate_day_month)
-@click.option("-sy", "--start-year", type=int, default=lambda: datetime.date.today().year - 15)
-@click.option("-ey", "--end-year", type=int, default=lambda: datetime.date.today().year - 1)
+@click.option("-d", "--day", type=int, callback=validate_day)
+@click.option("-m", "--month", type=int, required=True, callback=validate_month)
+@click.option(
+    "-sy", "--start-year", type=int, default=lambda: datetime.date.today().year - 15
+)
+@click.option(
+    "-ey", "--end-year", type=int, default=lambda: datetime.date.today().year - 1
+)
 @click.option("--recreate-db/--no-recreate-db'", default=False)
-def cli(day_month, start_year, end_year, recreate_db):
+def cli(day, month, start_year, end_year, recreate_db):
     """Extracts facts for past days from arquivo.pt and other sources
     saving them on a facts database."""
 
+    if day and month:
+        validate_day_month(day, month)
+
     with DesarquivoDb(recreate_db) as _db, HttpCacheDb(False) as _http_cache_db:
         extractors = setup_extractors()
-        month, day = day_month
         params = ExtractionParams(month, day, start_year, end_year, extractors)
         asyncio.run(run(params, _db, _http_cache_db))
 

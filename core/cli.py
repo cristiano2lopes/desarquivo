@@ -1,19 +1,31 @@
 import logging
 import logging.config
-from datetime import datetime as dt
+import pendulum
 
 import click
 
 
-def validate_day_month(ctx, param, value):
+def validate_day_month(day, month):
     try:
         # Using 2024 as a year that has february with 29 days
-        parsed_date = dt.strptime(f"2024-{value}", "%Y-%m-%d")
+        parsed_date = pendulum.from_format(f"2024-{month}-{day}", "YYYY-M-D")
         return parsed_date.month, parsed_date.day
     except ValueError:
-        raise click.BadParameter(
-            f"""Got value '{value}': format should be mm-dd: e.g 01-30 (30 January), 02-29 (29 February)"""
+        raise click.BadOptionUsage(
+            "-d", f"Option -d {day} invalid for provided -m {month}."
         )
+
+
+def validate_day(ctx, param, value: int):
+    if value is not None and not 0 < value < 32:
+        raise click.BadParameter(f"""Got value '{value}': Invalid day of month""")
+    return value
+
+
+def validate_month(ctx, param, value: int):
+    if not 0 < value < 13:
+        raise click.BadParameter(f"""Got value '{value}': Invalid month""")
+    return value
 
 
 def setup_logs(level=logging.DEBUG):

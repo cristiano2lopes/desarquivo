@@ -8,7 +8,7 @@ import pendulum
 
 from arquivo import ArchivedURL, VersionEntry
 from data import Fact, CategoryID, SourceID, HighRotationMusic
-from extractor.core import Extractor
+from extractor.core import Extractor, ExtractionTargetURL
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +67,7 @@ def extract_music_circa_2016(content) -> [HighRotationMusic]:
 
     return results
 
+
 def extract_music_circa_2019(content) -> [HighRotationMusic]:
     """Extracts song/artist from layout in this example
     https://arquivo.pt/noFrame/replay/20190101051253/https://radiocomercial.iol.pt/programas/8/todos-no-top-semana
@@ -105,13 +106,17 @@ class RadioComercialV1(Extractor):
 
     version = "v1"
     urls = [
-        "https://radiocomercial.clix.pt",
-        "https://radiocomercial.iol.pt",
-        "https://radiocomercial.iol.pt/programas/8/todos-no-top-semana",
-        "https://radiocomercial.iol.pt/programas/tnt-todos-no-top"
+        ExtractionTargetURL("https://radiocomercial.clix.pt", 2005, 2021),
+        ExtractionTargetURL("https://radiocomercial.iol.pt", 2000, pendulum.now().year),
+        ExtractionTargetURL(
+            "https://radiocomercial.iol.pt/programas/8/todos-no-top-semana", 2016, 2020
+        ),
+        ExtractionTargetURL(
+            "https://radiocomercial.iol.pt/programas/tnt-todos-no-top",
+            2020,
+            pendulum.now().year,
+        ),
     ]
-
-    applicable_time_span = (2008, pendulum.now().year)
 
     def extract_music_high_rotation(
         self, version_entry: VersionEntry, archived_url: ArchivedURL
@@ -126,7 +131,7 @@ class RadioComercialV1(Extractor):
                 extract_music_circa_2012(archived_url.content),
                 extract_music_circa_2016(archived_url.content),
                 extract_music_circa_2019(archived_url.content),
-                extract_music_circa_2020(archived_url.content)
+                extract_music_circa_2020(archived_url.content),
             )
 
             for result in results:
@@ -144,18 +149,19 @@ class RadioComercialV1(Extractor):
                 yield Fact(**data)
 
     async def extract(self) -> Generator[Fact, None, None]:
-        _from = max(self.applicable_time_span[0], self.params.start_year)
-        _to = min(self.applicable_time_span[1], self.params.end_year)
         yearly_tasks = [
-            self.arquivo.fetch_url_versions(url, str(year), str(year + 1))
-            for year in range(_from, _to + 1)
+            self.arquivo.fetch_url_versions(url.value, str(year), str(year + 1))
+            for year in range(self.params.start_year, self.params.end_year + 1)
             for url in self.urls
+            if url.applicable(year)
         ]
         all_resp = await asyncio.gather(*yearly_tasks)
         all_versions = itertools.chain(*all_resp)
 
         for version in all_versions:
-            if version.dt.day == self.params.day and version.dt.month == self.params.month:
+            if (
+                self.params.day is None or version.dt.day == self.params.day
+            ) and version.dt.month == self.params.month:
                 archived_url = await self.arquivo.fetched_archived_url(version)
                 music_facts = self.extract_music_high_rotation(version, archived_url)
                 for fact in music_facts:

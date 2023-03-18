@@ -61,9 +61,7 @@ class ArquivoClient:
     def cache_response(self, resp: httpx.Response):
         if self.http_cache_db:
             self.http_cache_db["requests"].insert(
-                {"url": str(resp.url), "content": resp.text},
-                pk="url",
-                ignore=True
+                {"url": str(resp.url), "content": resp.text}, pk="url", ignore=True
             )
 
     async def handle_resp(self, resp: httpx.Response):

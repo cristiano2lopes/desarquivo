@@ -1,3 +1,4 @@
+import sys
 from abc import ABC
 from typing import Generator
 
@@ -15,7 +16,7 @@ class ExtractionParams:
     """Params for an extraction job"""
 
     month: int
-    day: int
+    day: int | None
     start_year: int
     end_year: int
     extractors: list
@@ -28,8 +29,6 @@ class Extractor(ABC):
         self.arquivo = arquivo
         self.repository = repository
         self.params = params
-
-    applicable_time_span: tuple[int, int] = None
 
     async def extract(self) -> Generator[Fact, None, None]:
         raise NotImplementedError("Abstract Method")
@@ -54,3 +53,16 @@ class ExtractionJob:
         for extractor in extractors:
             facts = [fact async for fact in extractor.extract()]
             self.repo.insert_facts(facts)
+
+
+@dataclass
+class ExtractionTargetURL:
+
+    value: str
+    _from: int | None
+    _to: int | None
+
+    def applicable(self, year: int):
+        _from = self._from or 0
+        _to = self._to or sys.maxsize
+        return _from <= year <= _to
