@@ -51,7 +51,13 @@ class ExtractionJob:
         )
 
         for extractor in extractors:
-            facts = [fact async for fact in extractor.extract()]
+            facts = []
+            async for fact in extractor.extract():
+                facts.append(fact)
+                if len(facts) >= 2000:
+                    self.repo.insert_facts(facts)
+                    facts = []
+
             self.repo.insert_facts(facts)
 
 
