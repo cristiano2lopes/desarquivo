@@ -6,6 +6,7 @@ from enum import Enum
 class CategoryID(str, Enum):
     music_high_rotation = "music_high_rotation"
     cinema_on_theaters = "cinema_on_theaters"
+    news_highlight = "news_highlight"
 
 
 class SourceID(str, Enum):
@@ -54,3 +55,10 @@ class HighRotationMusic(BaseModel):
 
     artist: str
     song: str
+
+
+class NewsHighlight(BaseModel):
+
+    title: str
+    subtitle: str
+    more_link: str

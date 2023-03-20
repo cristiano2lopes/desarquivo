@@ -35,7 +35,12 @@ class Arquivo:
     def __init__(self, arquivo_client: ArquivoClient):
         self.__client = arquivo_client
 
-    async def fetched_archived_url(self, version: VersionEntry) -> ArchivedURL:
+    def to_absolute_url(self, path) -> str:
+        return str(self.__client.client.base_url.join(path))
+
+    async def fetched_archived_url(
+        self, version: VersionEntry
+    ) -> Optional[ArchivedURL]:
         try:
             resp = await self.__client.fetch_archived_url(
                 version.originalURL, version.tstamp
@@ -49,6 +54,21 @@ class Arquivo:
             return archived_url
         except:
             logger.exception("Fetch archived version entry")
+            return None
+
+    async def fetched_archived_path(self, path: str) -> Optional[ArchivedURL]:
+        try:
+            resp = await self.__client.fetch_url(path)
+            archived_url = ArchivedURL(
+                **{
+                    "headers": list(resp.headers.items()),
+                    "content": resp.text,
+                }
+            )
+            return archived_url
+        except:
+            logger.exception("Fetch archived version entry")
+            return None
 
     async def fetch_url_versions(
         self, url: str, since: str, until: str, retries: int = 3

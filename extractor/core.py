@@ -5,7 +5,7 @@ from typing import Generator
 from dataclasses import dataclass
 import logging
 
-from arquivo import Arquivo
+from arquivo import Arquivo, VersionEntry
 from data import Repository, Fact
 
 logger = logging.getLogger(__name__)
@@ -72,3 +72,25 @@ class ExtractionTargetURL:
         _from = self._from or 0
         _to = self._to or sys.maxsize
         return _from <= year <= _to
+
+
+def fact_builder(
+    version_entry: VersionEntry,
+    category: str,
+    source: str,
+    version: str,
+    content: dict,
+    date_id: int,
+) -> Fact:
+    data = {
+        "content": content,
+        "source_url": version_entry.linkToArchive,
+        "arquivo_url": version_entry.linkToNoFrame,
+        "screenshot_url": version_entry.linkToScreenshot,
+        "canonical_url": version_entry.originalURL,
+        "version": version,
+        "date_id": date_id,
+        "category_id": category,
+        "source_id": source,
+    }
+    return Fact(**data)

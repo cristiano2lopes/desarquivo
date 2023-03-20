@@ -8,7 +8,7 @@ import pendulum
 
 from arquivo import ArchivedURL, VersionEntry
 from data import Fact, CategoryID, SourceID, HighRotationMusic
-from extractor.core import Extractor, ExtractionTargetURL
+from extractor.core import Extractor, ExtractionTargetURL, fact_builder
 
 logger = logging.getLogger(__name__)
 
@@ -135,18 +135,14 @@ class RadioComercialV1(Extractor):
             )
 
             for result in results:
-                data = {
-                    "content": result.dict(),
-                    "source_url": version_entry.linkToArchive,
-                    "arquivo_url": version_entry.linkToNoFrame,
-                    "screenshot_url": version_entry.linkToScreenshot,
-                    "canonical_url": version_entry.originalURL,
-                    "version": self.version,
-                    "date_id": dt.id,
-                    "category_id": CategoryID.music_high_rotation,
-                    "source_id": SourceID.desarquivo,
-                }
-                yield Fact(**data)
+                yield fact_builder(
+                    version_entry,
+                    CategoryID.music_high_rotation,
+                    SourceID.desarquivo,
+                    self.version,
+                    result.dict(),
+                    dt.id,
+                )
 
     async def extract(self) -> Generator[Fact, None, None]:
         yearly_tasks = [
@@ -163,6 +159,9 @@ class RadioComercialV1(Extractor):
                 self.params.day is None or version.dt.day == self.params.day
             ) and version.dt.month == self.params.month:
                 archived_url = await self.arquivo.fetched_archived_url(version)
-                music_facts = self.extract_music_high_rotation(version, archived_url)
-                for fact in music_facts:
-                    yield fact
+                if archived_url is not None:
+                    music_facts = self.extract_music_high_rotation(
+                        version, archived_url
+                    )
+                    for fact in music_facts:
+                        yield fact

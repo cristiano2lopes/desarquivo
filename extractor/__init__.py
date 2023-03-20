@@ -1,5 +1,7 @@
 from .core import *
 from .radio_comercial import *
+from .rtp import *
+from .publico import *
 
 
 def setup_extractors():
