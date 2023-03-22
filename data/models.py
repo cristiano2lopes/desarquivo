@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from enum import Enum
 
@@ -51,14 +51,24 @@ class Fact(BaseModel):
     location_id: str | None = None
 
 
+def trim(content: str) -> str:
+    return content.strip()
+
+
 class HighRotationMusic(BaseModel):
 
     artist: str
     song: str
 
+    _normalize_artist = validator('artist', allow_reuse=True)(trim)
+    _normalize_song = validator('song', allow_reuse=True)(trim)
+
 
 class NewsHighlight(BaseModel):
 
     title: str
-    subtitle: str
+    summary: str
     more_link: str
+
+    _normalize_title = validator('title', allow_reuse=True)(trim)
+    _normalize_summary = validator('summary', allow_reuse=True)(trim)

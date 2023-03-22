@@ -13,19 +13,36 @@ from extractor.core import Extractor, ExtractionTargetURL, fact_builder
 logger = logging.getLogger(__name__)
 
 
-def extract_news_highlight_2008(content, full_url_fn) -> [NewsHighlight]:
+def extract_news_highlight_2005(content) -> [NewsHighlight]:
     """Extracts_news_highlight from layout in this example"""
     d = pq(content)
-    selector = ""
-    title = d(selector).text()
-    more_link = d(selector).attr("href")
+    selector = ".gerlinks table"
+    first_table = d(selector).eq(0)
     results = []
-    if title and more_link:
-        results.append(
-            NewsHighlight(
-                **{"title": title, "article": "", "more_link": full_url_fn(more_link)}
+    if first_table:
+        red_title = d(first_table)(".textoTituloVermelho")
+        black_title = d(first_table)(".textoTituloPreto")
+        title1 = red_title.text()
+        title2 = black_title.text()
+        title1_link = red_title.attr("href")
+        title2_link = black_title.attr("href")
+
+        summary1 = d(first_table)(".textoCaixa").eq(0).text()
+        summary2 = d(first_table)(".textoCaixa").eq(1).text()
+
+        if title1 and title1_link:
+            results.append(
+                NewsHighlight(
+                    **{"title": title1, "summary": summary1, "more_link": title1_link}
+                )
             )
-        )
+
+        if title2 and title2_link:
+            results.append(
+                NewsHighlight(
+                    **{"title": title2, "summary": summary2, "more_link": title2_link}
+                )
+            )
 
     return results
 
@@ -35,6 +52,7 @@ class PublicoV1(Extractor):
     version = "v1"
     urls = [
         ExtractionTargetURL("https://www.publico.pt", 1996, pendulum.now().year),
+        # ExtractionTargetURL("https://www.publico.clix.pt", 2005, 2019),
     ]
 
     def extract_news_highlight(
@@ -46,9 +64,7 @@ class PublicoV1(Extractor):
 
         if dt:
             results = itertools.chain(
-                extract_news_highlight_2008(
-                    archived_url.content, self.arquivo.to_absolute_url
-                ),
+                extract_news_highlight_2005(archived_url.content),
             )
 
             for result in results:

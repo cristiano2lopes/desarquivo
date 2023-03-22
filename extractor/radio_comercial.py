@@ -23,8 +23,8 @@ def extract_music_circa_2008(content) -> [HighRotationMusic]:
     elems = d(selector)
     results = []
     for elem in elems:
-        artist = d(elem)(".t11-yellow-bold").text().strip()
-        song = d(elem)(".t11-lightgrey").text().strip()
+        artist = d(elem)(".t11-yellow-bold").text()
+        song = d(elem)(".t11-lightgrey").text()
         if artist and song:
             results.append(HighRotationMusic(**{"artist": artist, "song": song}))
 
@@ -41,8 +41,8 @@ def extract_music_circa_2012(content) -> [HighRotationMusic]:
     elems = d(selector)
     results = []
     for elem in elems:
-        artist = pq(elem)(".tnt_hp_artist").text().strip()
-        song = pq(elem)(".tnt_hp_song").text().strip()
+        artist = pq(elem)(".tnt_hp_artist").text()
+        song = pq(elem)(".tnt_hp_song").text()
         if artist and song:
             results.append(HighRotationMusic(**{"artist": artist, "song": song}))
 
@@ -60,8 +60,8 @@ def extract_music_circa_2016(content) -> [HighRotationMusic]:
         matches = d(selector).children()
         if len(matches) == 5:
             (artist_elem, song_elem) = d(selector).children()[2:4]
-            artist = artist_elem.text.strip()
-            song = song_elem.text.strip()
+            artist = artist_elem.text
+            song = song_elem.text
             if artist and song:
                 results.append(HighRotationMusic(**{"artist": artist, "song": song}))
 
@@ -77,8 +77,8 @@ def extract_music_circa_2019(content) -> [HighRotationMusic]:
     elems = d(selector)
     results = []
     for elem in d(elems)[:10]:
-        artist = d(elem)("span").text().strip()
-        song = d(elem)("p").text().strip()
+        artist = d(elem)("span").text()
+        song = d(elem)("p").text()
         if artist and song:
             results.append(HighRotationMusic(**{"artist": artist, "song": song}))
 
@@ -94,8 +94,8 @@ def extract_music_circa_2020(content) -> [HighRotationMusic]:
     elems = d(selector)
     results = []
     for elem in d(elems)[:10]:
-        artist = d(elem)(".songArtist").text().strip()
-        song = d(elem)(".songTitle").text().strip()
+        artist = d(elem)(".songArtist").text()
+        song = d(elem)(".songTitle").text()
         if artist and song:
             results.append(HighRotationMusic(**{"artist": artist, "song": song}))
 

@@ -25,7 +25,7 @@ def extract_news_highlight_2008(content, full_url_fn) -> [NewsHighlight]:
     if title and more_link:
         results.append(
             NewsHighlight(
-                **{"title": title, "article": "", "more_link": full_url_fn(more_link)}
+                **{"title": title, "summary": "", "more_link": full_url_fn(more_link)}
             )
         )
 
@@ -48,7 +48,7 @@ def extract_news_highlight_2011(content, full_url_fn) -> [NewsHighlight]:
                 NewsHighlight(
                     **{
                         "title": title,
-                        "subtitle": "",
+                        "summary": "",
                         "more_link": full_url_fn(more_link),
                     }
                 )
@@ -72,7 +72,7 @@ def extract_news_highlight_2012(content, full_url_fn) -> [NewsHighlight]:
             NewsHighlight(
                 **{
                     "title": title,
-                    "subtitle": subtitle,
+                    "summary": subtitle,
                     "more_link": full_url_fn(more_link),
                 }
             )
@@ -98,7 +98,7 @@ def extract_news_highlight_2016(content, full_url_fn) -> [NewsHighlight]:
                 NewsHighlight(
                     **{
                         "title": title,
-                        "subtitle": subtitle,
+                        "summary": subtitle,
                         "more_link": full_url_fn(more_link),
                     }
                 )
@@ -122,7 +122,7 @@ def extract_news_highlight_2017(content, full_url_fn) -> [NewsHighlight]:
             NewsHighlight(
                 **{
                     "title": title,
-                    "subtitle": subtitle,
+                    "summary": subtitle,
                     "more_link": full_url_fn(more_link),
                 }
             )

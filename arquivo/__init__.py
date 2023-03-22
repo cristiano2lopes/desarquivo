@@ -35,8 +35,11 @@ class Arquivo:
     def __init__(self, arquivo_client: ArquivoClient):
         self.__client = arquivo_client
 
-    def to_absolute_url(self, path) -> str:
-        return str(self.__client.client.base_url.join(path))
+    def to_absolute_url(self, path: str) -> str:
+        if path.startswith("/"):
+            return str(self.__client.client.base_url.join(path))
+        else:
+            return path
 
     async def fetched_archived_url(
         self, version: VersionEntry
