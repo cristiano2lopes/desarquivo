@@ -4,16 +4,15 @@ import logging
 from typing import Generator
 
 from pyquery import PyQuery as pq
-import pendulum
 
-from arquivo import ArchivedURL, VersionEntry, Arquivo
+from arquivo import ArchivedURL, VersionEntry
 from data import Fact, CategoryID, SourceID, NewsHighlight
 from extractor.core import Extractor, ExtractionTargetURL, fact_builder
 
 logger = logging.getLogger(__name__)
 
 
-def extract_news_highlight_2008(content, full_url_fn) -> [NewsHighlight]:
+def extract_news_highlight_2008(content) -> [NewsHighlight]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20081021163216/http://ww1.rtp.pt/homepage/
     """
@@ -24,15 +23,13 @@ def extract_news_highlight_2008(content, full_url_fn) -> [NewsHighlight]:
     results = []
     if title and more_link:
         results.append(
-            NewsHighlight(
-                **{"title": title, "summary": "", "more_link": full_url_fn(more_link)}
-            )
+            NewsHighlight(**{"title": title, "summary": "", "more_link": more_link})
         )
 
     return results
 
 
-def extract_news_highlight_2011(content, full_url_fn) -> [NewsHighlight]:
+def extract_news_highlight_2011(content) -> [NewsHighlight]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20110121145922/http://ww1.rtp.pt/homepage/
     """
@@ -49,7 +46,7 @@ def extract_news_highlight_2011(content, full_url_fn) -> [NewsHighlight]:
                     **{
                         "title": title,
                         "summary": "",
-                        "more_link": full_url_fn(more_link),
+                        "more_link": more_link,
                     }
                 )
             )
@@ -57,7 +54,7 @@ def extract_news_highlight_2011(content, full_url_fn) -> [NewsHighlight]:
     return results
 
 
-def extract_news_highlight_2012(content, full_url_fn) -> [NewsHighlight]:
+def extract_news_highlight_2012(content) -> [NewsHighlight]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20120121192742/http://ww1.rtp.pt/homepage/
     """
@@ -73,7 +70,7 @@ def extract_news_highlight_2012(content, full_url_fn) -> [NewsHighlight]:
                 **{
                     "title": title,
                     "summary": subtitle,
-                    "more_link": full_url_fn(more_link),
+                    "more_link": more_link,
                 }
             )
         )
@@ -81,7 +78,7 @@ def extract_news_highlight_2012(content, full_url_fn) -> [NewsHighlight]:
     return results
 
 
-def extract_news_highlight_2016(content, full_url_fn) -> [NewsHighlight]:
+def extract_news_highlight_2016(content) -> [NewsHighlight]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20160301180236/http://www.rtp.pt/homepage/
     """
@@ -99,7 +96,7 @@ def extract_news_highlight_2016(content, full_url_fn) -> [NewsHighlight]:
                     **{
                         "title": title,
                         "summary": subtitle,
-                        "more_link": full_url_fn(more_link),
+                        "more_link": more_link,
                     }
                 )
             )
@@ -107,7 +104,7 @@ def extract_news_highlight_2016(content, full_url_fn) -> [NewsHighlight]:
     return results
 
 
-def extract_news_highlight_2017(content, full_url_fn) -> [NewsHighlight]:
+def extract_news_highlight_2017(content) -> [NewsHighlight]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20170201180213/http://www.rtp.pt/
     """
@@ -123,7 +120,7 @@ def extract_news_highlight_2017(content, full_url_fn) -> [NewsHighlight]:
                 **{
                     "title": title,
                     "summary": subtitle,
-                    "more_link": full_url_fn(more_link),
+                    "more_link": more_link,
                 }
             )
         )
@@ -132,7 +129,6 @@ def extract_news_highlight_2017(content, full_url_fn) -> [NewsHighlight]:
 
 
 class RTPV1(Extractor):
-
     version = "v1"
     urls = [
         ExtractionTargetURL("https://ww1.rtp.pt/homepage/", 2008, 2016),
@@ -147,23 +143,17 @@ class RTPV1(Extractor):
             version_entry.dt.year, version_entry.dt.month, version_entry.dt.day
         )
 
-        if dt:
+        content = archived_url.content
+        if not content:
+            logger.warning(f"No content for {version_entry.linkToNoFrame}")
+
+        if dt and content:
             results = itertools.chain(
-                extract_news_highlight_2008(
-                    archived_url.content, self.arquivo.to_absolute_url
-                ),
-                extract_news_highlight_2011(
-                    archived_url.content, self.arquivo.to_absolute_url
-                ),
-                extract_news_highlight_2012(
-                    archived_url.content, self.arquivo.to_absolute_url
-                ),
-                extract_news_highlight_2016(
-                    archived_url.content, self.arquivo.to_absolute_url
-                ),
-                extract_news_highlight_2017(
-                    archived_url.content, self.arquivo.to_absolute_url
-                ),
+                extract_news_highlight_2008(archived_url.content),
+                extract_news_highlight_2011(archived_url.content),
+                extract_news_highlight_2012(archived_url.content),
+                extract_news_highlight_2016(archived_url.content),
+                extract_news_highlight_2017(archived_url.content),
             )
 
             for result in results:

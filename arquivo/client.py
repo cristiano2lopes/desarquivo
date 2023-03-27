@@ -30,7 +30,6 @@ def autodetect(content):
 
 
 class ArquivoClient:
-
     DEFAULT_WAIT = 20
 
     client: httpx.AsyncClient

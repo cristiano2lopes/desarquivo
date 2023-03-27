@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 def extract_news_highlight_2005(content) -> [NewsHighlight]:
-    """Extracts_news_highlight from layout in this example"""
+    """Extracts_news_highlight from layout in this example
+    https://arquivo.pt/wayback/20050104091811/http://www.publico.pt:80/
+    """
     d = pq(content)
     selector = ".gerlinks table"
     first_table = d(selector).eq(0)
@@ -47,8 +49,58 @@ def extract_news_highlight_2005(content) -> [NewsHighlight]:
     return results
 
 
-class PublicoV1(Extractor):
+def extract_news_highlight_2010(content) -> [NewsHighlight]:
+    """Extracts_news_highlight from layout in this example
+    https://arquivo.pt/noFrame/replay/20100502143105/http://www.publico.pt/
+    """
+    d = pq(content)
+    selector = ".headlines .featured"
+    featured = d(selector)
+    results = []
+    if featured:
+        for e in featured:
+            elem = d(e)
+            if elem:
+                title1 = elem("h2").text()
+                title1_link = elem("a").attr("href")
+                summary1 = elem(".entry-body p:not(.author)").text()
+                if title1 and title1_link and summary1:
+                    results.append(
+                        NewsHighlight(
+                            **{
+                                "title": title1,
+                                "summary": summary1,
+                                "more_link": title1_link,
+                            }
+                        )
+                    )
 
+    return results
+
+
+def extract_news_highlight_2013(content) -> [NewsHighlight]:
+    """Extracts_news_highlight from layout in this example
+    https://arquivo.pt/wayback/20130110160340/http://www.publico.pt/
+    """
+    d = pq(content)
+    selector = ".primary .entries-primary .top-entry"
+    featured = d(selector)
+    results = []
+    if featured:
+        title1 = featured(".entry-title").text()
+        title1_link = featured(".entry-header a").attr("href")
+        summary1 = featured(".entry-summary").text()
+        if title1 and title1_link and summary1:
+            results.append(
+                NewsHighlight(
+                    **{"title": title1, "summary": summary1, "more_link": title1_link}
+                )
+            )
+
+    return results
+
+
+class PublicoV1(Extractor):
     version = "v1"
     urls = [
         ExtractionTargetURL("https://www.publico.pt", 1996, pendulum.now().year),
@@ -65,6 +117,8 @@ class PublicoV1(Extractor):
         if dt:
             results = itertools.chain(
                 extract_news_highlight_2005(archived_url.content),
+                extract_news_highlight_2010(archived_url.content),
+                extract_news_highlight_2013(archived_url.content),
             )
 
             for result in results:

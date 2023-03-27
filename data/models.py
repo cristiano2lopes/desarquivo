@@ -1,6 +1,9 @@
+import httpx
 from pydantic import BaseModel, validator
 
 from enum import Enum
+
+from arquivo import ArquivoApiPath
 
 
 class CategoryID(str, Enum):
@@ -55,20 +58,27 @@ def trim(content: str) -> str:
     return content.strip()
 
 
-class HighRotationMusic(BaseModel):
+def make_absolute_url(path_or_url: str):
+    if path_or_url.startswith("/"):
+        url = httpx.URL(ArquivoApiPath.BASE_URL)
+        return url.join(path_or_url)
+    else:
+        return path_or_url
 
+
+class HighRotationMusic(BaseModel):
     artist: str
     song: str
 
-    _normalize_artist = validator('artist', allow_reuse=True)(trim)
-    _normalize_song = validator('song', allow_reuse=True)(trim)
+    _normalize_artist = validator("artist", allow_reuse=True)(trim)
+    _normalize_song = validator("song", allow_reuse=True)(trim)
 
 
 class NewsHighlight(BaseModel):
-
     title: str
     summary: str
     more_link: str
 
-    _normalize_title = validator('title', allow_reuse=True)(trim)
-    _normalize_summary = validator('summary', allow_reuse=True)(trim)
+    _normalize_title = validator("title", allow_reuse=True)(trim)
+    _normalize_summary = validator("summary", allow_reuse=True)(trim)
+    _make_absolute_url = validator("more_link", allow_reuse=True)(make_absolute_url)

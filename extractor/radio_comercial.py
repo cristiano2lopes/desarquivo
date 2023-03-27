@@ -103,7 +103,6 @@ def extract_music_circa_2020(content) -> [HighRotationMusic]:
 
 
 class RadioComercialV1(Extractor):
-
     version = "v1"
     urls = [
         ExtractionTargetURL("https://radiocomercial.clix.pt", 2005, 2021),

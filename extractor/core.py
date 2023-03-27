@@ -63,7 +63,6 @@ class ExtractionJob:
 
 @dataclass
 class ExtractionTargetURL:
-
     value: str
     _from: int | None
     _to: int | None

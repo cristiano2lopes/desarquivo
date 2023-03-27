@@ -52,7 +52,6 @@ def cli(
         validate_day_month(day, month)
 
     with DesarquivoDb(recreate_db) as _db, HttpCacheDb(False) as _http_cache_db:
-
         all_extractors = setup_extractors()
         if extractor is not None:
             all_extractors = [
