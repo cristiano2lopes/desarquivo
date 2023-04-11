@@ -25,6 +25,7 @@ CREATE TABLE date_dim (
 CREATE TABLE fact (
     id TEXT PRIMARY KEY,
     content TEXT NOT NULL,
+    accessory_content TEXT,
     source_url TEXT NOT NULL,
     arquivo_url TEXT NOT NULL,
     screenshot_url TEXT,

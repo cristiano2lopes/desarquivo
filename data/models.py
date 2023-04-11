@@ -43,6 +43,7 @@ class DateDim(BaseModel):
 class Fact(BaseModel):
     id: str | None = None
     content: dict
+    accessory_content: dict | None
     source_url: str
     arquivo_url: str
     canonical_url: str
@@ -77,8 +78,12 @@ class HighRotationMusic(BaseModel):
 class NewsHighlight(BaseModel):
     title: str
     summary: str
-    more_link: str
 
     _normalize_title = validator("title", allow_reuse=True)(trim)
     _normalize_summary = validator("summary", allow_reuse=True)(trim)
+
+
+class NewsHighlightAccessory(BaseModel):
+    more_link: str
+
     _make_absolute_url = validator("more_link", allow_reuse=True)(make_absolute_url)

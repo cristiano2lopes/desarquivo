@@ -7,13 +7,18 @@ from pyquery import PyQuery as pq
 import pendulum
 
 from arquivo import ArchivedURL, VersionEntry, Arquivo
-from data import Fact, CategoryID, SourceID, NewsHighlight
-from extractor.core import Extractor, ExtractionTargetURL, fact_builder
+from data import Fact, CategoryID, SourceID, NewsHighlight, NewsHighlightAccessory
+from extractor.core import (
+    Extractor,
+    ExtractionTargetURL,
+    fact_builder,
+    ExtractionResult,
+)
 
 logger = logging.getLogger(__name__)
 
 
-def extract_news_highlight_2005(content) -> [NewsHighlight]:
+def extract_news_highlight_2005(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20050104091811/http://www.publico.pt:80/
     """
@@ -34,22 +39,42 @@ def extract_news_highlight_2005(content) -> [NewsHighlight]:
 
         if title1 and title1_link:
             results.append(
-                NewsHighlight(
-                    **{"title": title1, "summary": summary1, "more_link": title1_link}
+                ExtractionResult(
+                    content=NewsHighlight(
+                        **{
+                            "title": title1,
+                            "summary": summary1,
+                        }
+                    ),
+                    accessory_content=NewsHighlightAccessory(
+                        **{
+                            "more_link": title1_link,
+                        }
+                    ),
                 )
             )
 
         if title2 and title2_link:
             results.append(
-                NewsHighlight(
-                    **{"title": title2, "summary": summary2, "more_link": title2_link}
+                ExtractionResult(
+                    content=NewsHighlight(
+                        **{
+                            "title": title2,
+                            "summary": summary2,
+                        }
+                    ),
+                    accessory_content=NewsHighlightAccessory(
+                        **{
+                            "more_link": title2_link,
+                        }
+                    ),
                 )
             )
 
     return results
 
 
-def extract_news_highlight_2010(content) -> [NewsHighlight]:
+def extract_news_highlight_2010(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/noFrame/replay/20100502143105/http://www.publico.pt/
     """
@@ -78,7 +103,7 @@ def extract_news_highlight_2010(content) -> [NewsHighlight]:
     return results
 
 
-def extract_news_highlight_2013(content) -> [NewsHighlight]:
+def extract_news_highlight_2013(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20130110160340/http://www.publico.pt/
     """
@@ -92,8 +117,18 @@ def extract_news_highlight_2013(content) -> [NewsHighlight]:
         summary1 = featured(".entry-summary").text()
         if title1 and title1_link and summary1:
             results.append(
-                NewsHighlight(
-                    **{"title": title1, "summary": summary1, "more_link": title1_link}
+                ExtractionResult(
+                    content=NewsHighlight(
+                        **{
+                            "title": title1,
+                            "summary": summary1,
+                        }
+                    ),
+                    accessory_content=NewsHighlightAccessory(
+                        **{
+                            "more_link": title1_link,
+                        }
+                    ),
                 )
             )
 
@@ -127,7 +162,7 @@ class PublicoV1(Extractor):
                     CategoryID.news_highlight,
                     SourceID.desarquivo,
                     self.version,
-                    result.dict(),
+                    result,
                     dt.id,
                 )
 

@@ -8,12 +8,17 @@ import pendulum
 
 from arquivo import ArchivedURL, VersionEntry
 from data import Fact, CategoryID, SourceID, HighRotationMusic
-from extractor.core import Extractor, ExtractionTargetURL, fact_builder
+from extractor.core import (
+    Extractor,
+    ExtractionTargetURL,
+    fact_builder,
+    ExtractionResult,
+)
 
 logger = logging.getLogger(__name__)
 
 
-def extract_music_circa_2008(content) -> [HighRotationMusic]:
+def extract_music_circa_2008(content) -> [ExtractionResult]:
     """Extracts song/artist from layout in this example
     https://arquivo.pt/noFrame/replay/20081021131315/http://radiocomercial.clix.pt/
     """
@@ -26,12 +31,17 @@ def extract_music_circa_2008(content) -> [HighRotationMusic]:
         artist = d(elem)(".t11-yellow-bold").text()
         song = d(elem)(".t11-lightgrey").text()
         if artist and song:
-            results.append(HighRotationMusic(**{"artist": artist, "song": song}))
+            results.append(
+                ExtractionResult(
+                    content=HighRotationMusic(**{"artist": artist, "song": song}),
+                    accessory_content=None,
+                )
+            )
 
     return results
 
 
-def extract_music_circa_2012(content) -> [HighRotationMusic]:
+def extract_music_circa_2012(content) -> [ExtractionResult]:
     """Extracts song/artist from layout in this example
     https://arquivo.pt/noFrame/replay/20120121123254/http://radiocomercial.clix.pt/
     """
@@ -44,12 +54,17 @@ def extract_music_circa_2012(content) -> [HighRotationMusic]:
         artist = pq(elem)(".tnt_hp_artist").text()
         song = pq(elem)(".tnt_hp_song").text()
         if artist and song:
-            results.append(HighRotationMusic(**{"artist": artist, "song": song}))
+            results.append(
+                ExtractionResult(
+                    content=HighRotationMusic(**{"artist": artist, "song": song}),
+                    accessory_content=None,
+                )
+            )
 
     return results
 
 
-def extract_music_circa_2016(content) -> [HighRotationMusic]:
+def extract_music_circa_2016(content) -> [ExtractionResult]:
     """Extracts song/artist from layout in this example
     https://arquivo.pt/wayback/20160226180211/http://radiocomercial.iol.pt/
     """
@@ -63,12 +78,17 @@ def extract_music_circa_2016(content) -> [HighRotationMusic]:
             artist = artist_elem.text
             song = song_elem.text
             if artist and song:
-                results.append(HighRotationMusic(**{"artist": artist, "song": song}))
+                results.append(
+                    ExtractionResult(
+                        content=HighRotationMusic(**{"artist": artist, "song": song}),
+                        accessory_content=None,
+                    )
+                )
 
     return results
 
 
-def extract_music_circa_2019(content) -> [HighRotationMusic]:
+def extract_music_circa_2019(content) -> [ExtractionResult]:
     """Extracts song/artist from layout in this example
     https://arquivo.pt/noFrame/replay/20190101051253/https://radiocomercial.iol.pt/programas/8/todos-no-top-semana
     """
@@ -80,12 +100,17 @@ def extract_music_circa_2019(content) -> [HighRotationMusic]:
         artist = d(elem)("span").text()
         song = d(elem)("p").text()
         if artist and song:
-            results.append(HighRotationMusic(**{"artist": artist, "song": song}))
+            results.append(
+                ExtractionResult(
+                    content=HighRotationMusic(**{"artist": artist, "song": song}),
+                    accessory_content=None,
+                )
+            )
 
     return results
 
 
-def extract_music_circa_2020(content) -> [HighRotationMusic]:
+def extract_music_circa_2020(content) -> [ExtractionResult]:
     """Extracts song/artist from layout in this example
     https://arquivo.pt/noFrame/replay/20200313185844/https://radiocomercial.iol.pt/programas/tnt-todos-no-top
     """
@@ -97,7 +122,12 @@ def extract_music_circa_2020(content) -> [HighRotationMusic]:
         artist = d(elem)(".songArtist").text()
         song = d(elem)(".songTitle").text()
         if artist and song:
-            results.append(HighRotationMusic(**{"artist": artist, "song": song}))
+            results.append(
+                ExtractionResult(
+                    content=HighRotationMusic(**{"artist": artist, "song": song}),
+                    accessory_content=None,
+                )
+            )
 
     return results
 
@@ -139,7 +169,7 @@ class RadioComercialV1(Extractor):
                     CategoryID.music_high_rotation,
                     SourceID.desarquivo,
                     self.version,
-                    result.dict(),
+                    result,
                     dt.id,
                 )
 

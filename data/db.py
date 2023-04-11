@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Iterable
 
 from sqlite_utils import Database
-from sqlite_utils.utils import hash_record
 
 from data.models import *
 

@@ -5,6 +5,8 @@ from typing import Generator
 from dataclasses import dataclass
 import logging
 
+from pydantic import BaseModel
+
 from arquivo import Arquivo, VersionEntry
 from data import Repository, Fact
 
@@ -73,16 +75,26 @@ class ExtractionTargetURL:
         return _from <= year <= _to
 
 
+@dataclass
+class ExtractionResult:
+    content: BaseModel
+    accessory_content: BaseModel | None
+
+
 def fact_builder(
     version_entry: VersionEntry,
     category: str,
     source: str,
     version: str,
-    content: dict,
+    extraction_result: ExtractionResult,
     date_id: int,
 ) -> Fact:
+    accessory_content = None
+    if extraction_result.accessory_content is not None:
+        accessory_content = extraction_result.accessory_content.dict()
     data = {
-        "content": content,
+        "content": extraction_result.content.dict(),
+        "accessory_content": accessory_content,
         "source_url": version_entry.linkToArchive,
         "arquivo_url": version_entry.linkToNoFrame,
         "screenshot_url": version_entry.linkToScreenshot,

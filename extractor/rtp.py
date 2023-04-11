@@ -6,13 +6,18 @@ from typing import Generator
 from pyquery import PyQuery as pq
 
 from arquivo import ArchivedURL, VersionEntry
-from data import Fact, CategoryID, SourceID, NewsHighlight
-from extractor.core import Extractor, ExtractionTargetURL, fact_builder
+from data import Fact, CategoryID, SourceID, NewsHighlight, NewsHighlightAccessory
+from extractor.core import (
+    Extractor,
+    ExtractionTargetURL,
+    fact_builder,
+    ExtractionResult,
+)
 
 logger = logging.getLogger(__name__)
 
 
-def extract_news_highlight_2008(content) -> [NewsHighlight]:
+def extract_news_highlight_2008(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20081021163216/http://ww1.rtp.pt/homepage/
     """
@@ -22,14 +27,24 @@ def extract_news_highlight_2008(content) -> [NewsHighlight]:
     more_link = d(selector).attr("href")
     results = []
     if title and more_link:
-        results.append(
-            NewsHighlight(**{"title": title, "summary": "", "more_link": more_link})
+        ExtractionResult(
+            content=NewsHighlight(
+                **{
+                    "title": title,
+                    "summary": "",
+                }
+            ),
+            accessory_content=NewsHighlightAccessory(
+                **{
+                    "more_link": more_link,
+                }
+            ),
         )
 
     return results
 
 
-def extract_news_highlight_2011(content) -> [NewsHighlight]:
+def extract_news_highlight_2011(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20110121145922/http://ww1.rtp.pt/homepage/
     """
@@ -42,19 +57,25 @@ def extract_news_highlight_2011(content) -> [NewsHighlight]:
         more_link = d(elem)("a").attr("href")
         if title and more_link:
             results.append(
-                NewsHighlight(
-                    **{
-                        "title": title,
-                        "summary": "",
-                        "more_link": more_link,
-                    }
+                ExtractionResult(
+                    content=NewsHighlight(
+                        **{
+                            "title": title,
+                            "summary": "",
+                        }
+                    ),
+                    accessory_content=NewsHighlightAccessory(
+                        **{
+                            "more_link": more_link,
+                        }
+                    ),
                 )
             )
 
     return results
 
 
-def extract_news_highlight_2012(content) -> [NewsHighlight]:
+def extract_news_highlight_2012(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20120121192742/http://ww1.rtp.pt/homepage/
     """
@@ -66,19 +87,25 @@ def extract_news_highlight_2012(content) -> [NewsHighlight]:
     subtitle = d(selector)("p").text()
     if title and more_link and subtitle:
         results.append(
-            NewsHighlight(
-                **{
-                    "title": title,
-                    "summary": subtitle,
-                    "more_link": more_link,
-                }
+            ExtractionResult(
+                content=NewsHighlight(
+                    **{
+                        "title": title,
+                        "summary": subtitle,
+                    }
+                ),
+                accessory_content=NewsHighlightAccessory(
+                    **{
+                        "more_link": more_link,
+                    }
+                ),
             )
         )
 
     return results
 
 
-def extract_news_highlight_2016(content) -> [NewsHighlight]:
+def extract_news_highlight_2016(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20160301180236/http://www.rtp.pt/homepage/
     """
@@ -92,19 +119,25 @@ def extract_news_highlight_2016(content) -> [NewsHighlight]:
         subtitle = d(elem)("p").text()
         if title and more_link and subtitle:
             results.append(
-                NewsHighlight(
-                    **{
-                        "title": title,
-                        "summary": subtitle,
-                        "more_link": more_link,
-                    }
+                ExtractionResult(
+                    content=NewsHighlight(
+                        **{
+                            "title": title,
+                            "summary": subtitle,
+                        }
+                    ),
+                    accessory_content=NewsHighlightAccessory(
+                        **{
+                            "more_link": more_link,
+                        }
+                    ),
                 )
             )
 
     return results
 
 
-def extract_news_highlight_2017(content) -> [NewsHighlight]:
+def extract_news_highlight_2017(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
     https://arquivo.pt/wayback/20170201180213/http://www.rtp.pt/
     """
@@ -116,12 +149,18 @@ def extract_news_highlight_2017(content) -> [NewsHighlight]:
     subtitle = ""
     if title and more_link:
         results.append(
-            NewsHighlight(
-                **{
-                    "title": title,
-                    "summary": subtitle,
-                    "more_link": more_link,
-                }
+            ExtractionResult(
+                content=NewsHighlight(
+                    **{
+                        "title": title,
+                        "summary": subtitle,
+                    }
+                ),
+                accessory_content=NewsHighlightAccessory(
+                    **{
+                        "more_link": more_link,
+                    }
+                ),
             )
         )
 
@@ -162,7 +201,7 @@ class RTPV1(Extractor):
                     CategoryID.news_highlight,
                     SourceID.desarquivo,
                     self.version,
-                    result.dict(),
+                    result,
                     dt.id,
                 )
 
