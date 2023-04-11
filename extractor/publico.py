@@ -134,12 +134,80 @@ def extract_news_highlight_2013(content) -> [ExtractionResult]:
 
     return results
 
+def extract_news_highlight_2015(content) -> [ExtractionResult]:
+    """Extracts_news_highlight from layout in this example
+    https://arquivo.pt/wayback/20150101180252/http://www.publico.pt/
+    """
+    d = pq(content)
+    selector = ".breaking .hentry"
+    featured = d(selector)
+    results = []
+    if featured:
+        title1 = featured("header a").text()
+        title1_link = featured("header a").attr("href")
+        summary1 = featured(".entry-summary").text()
+        if title1 and title1_link and summary1:
+            results.append(
+                ExtractionResult(
+                    content=NewsHighlight(
+                        **{
+                            "title": title1,
+                            "summary": summary1,
+                        }
+                    ),
+                    accessory_content=NewsHighlightAccessory(
+                        **{
+                            "more_link": title1_link,
+                        }
+                    ),
+                )
+            )
+
+    return results
+
+def extract_news_highlight_2019(content) -> [ExtractionResult]:
+    """Extracts_news_highlight from layout in this example
+    https://arquivo.pt/noFrame/replay/20190101180046/https://www.publico.pt/
+    """
+    d = pq(content)
+
+    title_txt = None
+    link_txt = None
+    summary_txt = None
+    title = d("article.card.card--l.tone--news .card__title.headline")
+    if title:
+        title_txt = title.text()
+        link_txt = title("a").attr("href")
+
+    summary = d("article.card.card--l.tone--news .headline-list")
+    if summary:
+        summary_txt = summary.text()
+
+    results = []
+    if (title_txt or summary_txt) and link_txt:
+        results.append(
+            ExtractionResult(
+                content=NewsHighlight(
+                    **{
+                        "title": title_txt,
+                        "summary": summary_txt,
+                    }
+                ),
+                accessory_content=NewsHighlightAccessory(
+                    **{
+                        "more_link": link_txt,
+                    }
+                ),
+            )
+        )
+
+    return results
+
 
 class PublicoV1(Extractor):
     version = "v1"
     urls = [
         ExtractionTargetURL("https://www.publico.pt", 1996, pendulum.now().year),
-        # ExtractionTargetURL("https://www.publico.clix.pt", 2005, 2019),
     ]
 
     def extract_news_highlight(
@@ -154,6 +222,8 @@ class PublicoV1(Extractor):
                 extract_news_highlight_2005(archived_url.content),
                 extract_news_highlight_2010(archived_url.content),
                 extract_news_highlight_2013(archived_url.content),
+                extract_news_highlight_2015(archived_url.content),
+                extract_news_highlight_2019(archived_url.content),
             )
 
             for result in results:
