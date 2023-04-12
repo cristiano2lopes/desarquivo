@@ -177,9 +177,9 @@ def extract_news_highlight_2019(content) -> [ExtractionResult]:
     """
     d = pq(content)
 
-    title_txt = None
-    link_txt = None
-    summary_txt = None
+    title_txt = ""
+    link_txt = ""
+    summary_txt = ""
     title = d("article.card.card--l.tone--news .card__title.headline")
     if title:
         title_txt = title.text()
