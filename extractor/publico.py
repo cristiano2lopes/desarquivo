@@ -6,7 +6,7 @@ from typing import Generator
 from pyquery import PyQuery as pq
 import pendulum
 
-from arquivo import ArchivedURL, VersionEntry, Arquivo
+from arquivo import ArchivedURL, VersionEntry
 from data import Fact, CategoryID, SourceID, NewsHighlight, NewsHighlightAccessory
 from extractor.core import (
     Extractor,
@@ -91,12 +91,18 @@ def extract_news_highlight_2010(content) -> [ExtractionResult]:
                 summary1 = elem(".entry-body p:not(.author)").text()
                 if title1 and title1_link and summary1:
                     results.append(
-                        NewsHighlight(
-                            **{
-                                "title": title1,
-                                "summary": summary1,
-                                "more_link": title1_link,
-                            }
+                        ExtractionResult(
+                            content=NewsHighlight(
+                                **{
+                                    "title": title1,
+                                    "summary": summary1,
+                                }
+                            ),
+                            accessory_content=NewsHighlightAccessory(
+                                **{
+                                    "more_link": title1_link,
+                                }
+                            ),
                         )
                     )
 
