@@ -22,6 +22,11 @@ CREATE TABLE date_dim (
     UNIQUE (year, month, day)
 );
 
+CREATE TABLE extractor_dim (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE
+);
+
 CREATE TABLE fact (
     id TEXT PRIMARY KEY,
     content TEXT NOT NULL,
@@ -34,11 +39,13 @@ CREATE TABLE fact (
     updated_at DATETIME,
     version TEXT,
     date_id INTEGER NOT NULL,
-    category_id INTEGER NOT NULL,
-    source_id INTEGER NOT NULL,
-    location_id INTEGER,
+    category_id TEXT NOT NULL,
+    source_id TEXT NOT NULL,
+    extractor_id TEXT NOT NULL,
+    location_id TEXT,
     FOREIGN KEY (date_id) REFERENCES date_dim(id),
     FOREIGN KEY (category_id) REFERENCES category_dim(id),
     FOREIGN KEY (source_id) REFERENCES source_dim(id),
-    FOREIGN KEY (location_id) REFERENCES location_dim(id)
+    FOREIGN KEY (location_id) REFERENCES location_dim(id),
+    FOREIGN KEY (extractor_id) REFERENCES extractor_dim(id),
 );

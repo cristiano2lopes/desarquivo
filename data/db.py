@@ -91,6 +91,18 @@ class Repository:
         else:
             return None
 
+    def fetch_extractor(self, _id: str, name: str) -> ExtractorDim:
+        records = self.db.table("extractor_dim").rows_where(
+            "id = :id", {"id": _id}, limit=1
+        )
+
+        if record := next(records, None):
+            return ExtractorDim(**record)
+        else:
+            new_record = {"id": _id, "name": name}
+            self.db.table("extractor_dim").insert({"id": _id, "name": name})
+            return ExtractorDim(**new_record)
+
     def fetch_location(self, _id: str) -> LocationDim | None:
         records = self.db.table("location_dim").rows_where(
             "id = :id", {"id": _id}, limit=1

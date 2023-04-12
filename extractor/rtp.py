@@ -6,7 +6,14 @@ from typing import Generator
 from pyquery import PyQuery as pq
 
 from arquivo import ArchivedURL, VersionEntry
-from data import Fact, CategoryID, SourceID, NewsHighlight, NewsHighlightAccessory
+from data import (
+    Fact,
+    CategoryID,
+    SourceID,
+    NewsHighlight,
+    NewsHighlightAccessory,
+    ExtractorDim,
+)
 from extractor.core import (
     Extractor,
     ExtractionTargetURL,
@@ -203,6 +210,7 @@ class RTPV1(Extractor):
                     self.version,
                     result,
                     dt.id,
+                    self.extractor_dim.id,
                 )
 
     async def extract(self) -> Generator[Fact, None, None]:
@@ -223,3 +231,8 @@ class RTPV1(Extractor):
                 news_facts = self.extract_news_highlight(version, archived_url)
                 for fact in news_facts:
                     yield fact
+
+    def extractor_specification(self) -> ExtractorDim:
+        return ExtractorDim(
+            **{"id": f"rtp_noticias_{self.version}", "name": "RTP Notícias"}
+        )

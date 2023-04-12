@@ -8,7 +8,7 @@ import logging
 from pydantic import BaseModel
 
 from arquivo import Arquivo, VersionEntry
-from data import Repository, Fact
+from data import Repository, Fact, ExtractorDim
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,16 @@ class Extractor(ABC):
         self.repository = repository
         self.params = params
 
+        es = self.extractor_specification()
+        self.extractor_dim = repository.fetch_extractor(
+            _id=es.id,
+            name=es.name,
+        )
+
     async def extract(self) -> Generator[Fact, None, None]:
+        raise NotImplementedError("Abstract Method")
+
+    def extractor_specification(self) -> ExtractorDim:
         raise NotImplementedError("Abstract Method")
 
 
@@ -88,6 +97,7 @@ def fact_builder(
     version: str,
     extraction_result: ExtractionResult,
     date_id: int,
+    extractor_id: str,
 ) -> Fact:
     accessory_content = None
     if extraction_result.accessory_content is not None:
@@ -103,5 +113,6 @@ def fact_builder(
         "date_id": date_id,
         "category_id": category,
         "source_id": source,
+        "extractor_id": extractor_id,
     }
     return Fact(**data)

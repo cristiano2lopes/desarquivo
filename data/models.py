@@ -40,6 +40,11 @@ class DateDim(BaseModel):
     day_of_week: int
 
 
+class ExtractorDim(BaseModel):
+    id: str
+    name: str
+
+
 class Fact(BaseModel):
     id: str | None = None
     content: dict
@@ -52,6 +57,7 @@ class Fact(BaseModel):
     date_id: int
     category_id: str
     source_id: str
+    extractor_id: str
     location_id: str | None = None
 
 
@@ -62,7 +68,7 @@ def trim(content: str) -> str:
 def make_absolute_url(path_or_url: str):
     if path_or_url.startswith("/"):
         url = httpx.URL(ArquivoApiPath.BASE_URL)
-        return url.join(path_or_url)
+        return str(url.join(path_or_url))
     else:
         return path_or_url
 

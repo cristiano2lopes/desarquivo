@@ -7,7 +7,14 @@ from pyquery import PyQuery as pq
 import pendulum
 
 from arquivo import ArchivedURL, VersionEntry
-from data import Fact, CategoryID, SourceID, NewsHighlight, NewsHighlightAccessory
+from data import (
+    Fact,
+    CategoryID,
+    SourceID,
+    NewsHighlight,
+    NewsHighlightAccessory,
+    ExtractorDim,
+)
 from extractor.core import (
     Extractor,
     ExtractionTargetURL,
@@ -89,7 +96,7 @@ def extract_news_highlight_2010(content) -> [ExtractionResult]:
                 title1 = elem("h2").text()
                 title1_link = elem("a").attr("href")
                 summary1 = elem(".entry-body p:not(.author)").text()
-                if title1 and title1_link and summary1:
+                if title1 and title1_link:
                     results.append(
                         ExtractionResult(
                             content=NewsHighlight(
@@ -118,27 +125,30 @@ def extract_news_highlight_2013(content) -> [ExtractionResult]:
     featured = d(selector)
     results = []
     if featured:
-        title1 = featured(".entry-title").text()
-        title1_link = featured(".entry-header a").attr("href")
-        summary1 = featured(".entry-summary").text()
-        if title1 and title1_link and summary1:
-            results.append(
-                ExtractionResult(
-                    content=NewsHighlight(
-                        **{
-                            "title": title1,
-                            "summary": summary1,
-                        }
-                    ),
-                    accessory_content=NewsHighlightAccessory(
-                        **{
-                            "more_link": title1_link,
-                        }
-                    ),
+        for elem in featured:
+            jq_elem = pq(elem)
+            title1 = jq_elem(".entry-title").text()
+            title1_link = jq_elem(".entry-header a").attr("href") or jq_elem(".entry-text a").attr("href")
+            summary1 = jq_elem(".entry-summary").text()
+            if title1 and title1_link:
+                results.append(
+                    ExtractionResult(
+                        content=NewsHighlight(
+                            **{
+                                "title": title1,
+                                "summary": summary1,
+                            }
+                        ),
+                        accessory_content=NewsHighlightAccessory(
+                            **{
+                                "more_link": title1_link,
+                            }
+                        ),
+                    )
                 )
-            )
 
     return results
+
 
 def extract_news_highlight_2015(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
@@ -152,7 +162,7 @@ def extract_news_highlight_2015(content) -> [ExtractionResult]:
         title1 = featured("header a").text()
         title1_link = featured("header a").attr("href")
         summary1 = featured(".entry-summary").text()
-        if title1 and title1_link and summary1:
+        if title1 and title1_link:
             results.append(
                 ExtractionResult(
                     content=NewsHighlight(
@@ -170,6 +180,7 @@ def extract_news_highlight_2015(content) -> [ExtractionResult]:
             )
 
     return results
+
 
 def extract_news_highlight_2019(content) -> [ExtractionResult]:
     """Extracts_news_highlight from layout in this example
@@ -190,7 +201,7 @@ def extract_news_highlight_2019(content) -> [ExtractionResult]:
         summary_txt = summary.text()
 
     results = []
-    if (title_txt or summary_txt) and link_txt:
+    if title_txt and link_txt:
         results.append(
             ExtractionResult(
                 content=NewsHighlight(
@@ -240,6 +251,7 @@ class PublicoV1(Extractor):
                     self.version,
                     result,
                     dt.id,
+                    self.extractor_dim.id,
                 )
 
     async def extract(self) -> Generator[Fact, None, None]:
@@ -260,3 +272,8 @@ class PublicoV1(Extractor):
                 news_facts = self.extract_news_highlight(version, archived_url)
                 for fact in news_facts:
                     yield fact
+
+    def extractor_specification(self) -> ExtractorDim:
+        return ExtractorDim(
+            **{"id": f"jornal_publico_{self.version}", "name": "Público"}
+        )

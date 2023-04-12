@@ -7,7 +7,7 @@ from pyquery import PyQuery as pq
 import pendulum
 
 from arquivo import ArchivedURL, VersionEntry
-from data import Fact, CategoryID, SourceID, HighRotationMusic
+from data import Fact, CategoryID, SourceID, HighRotationMusic, ExtractorDim
 from extractor.core import (
     Extractor,
     ExtractionTargetURL,
@@ -171,6 +171,7 @@ class RadioComercialV1(Extractor):
                     self.version,
                     result,
                     dt.id,
+                    self.extractor_dim.id,
                 )
 
     async def extract(self) -> Generator[Fact, None, None]:
@@ -194,3 +195,8 @@ class RadioComercialV1(Extractor):
                     )
                     for fact in music_facts:
                         yield fact
+
+    def extractor_specification(self) -> ExtractorDim:
+        return ExtractorDim(
+            **{"id": f"radio_comercial_{self.version}", "name": "Rádio Comercial"}
+        )
