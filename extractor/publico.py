@@ -18,7 +18,7 @@ from data import (
 from extractor.core import (
     Extractor,
     ExtractionTargetURL,
-    fact_builder,
+    arquivo_fact_builder,
     ExtractionResult,
 )
 
@@ -128,7 +128,9 @@ def extract_news_highlight_2013(content) -> [ExtractionResult]:
         for elem in featured:
             jq_elem = pq(elem)
             title1 = jq_elem(".entry-title").text()
-            title1_link = jq_elem(".entry-header a").attr("href") or jq_elem(".entry-text a").attr("href")
+            title1_link = jq_elem(".entry-header a").attr("href") or jq_elem(
+                ".entry-text a"
+            ).attr("href")
             summary1 = jq_elem(".entry-summary").text()
             if title1 and title1_link:
                 results.append(
@@ -244,7 +246,7 @@ class PublicoV1(Extractor):
             )
 
             for result in results:
-                yield fact_builder(
+                yield arquivo_fact_builder(
                     version_entry,
                     CategoryID.news_highlight,
                     SourceID.desarquivo,

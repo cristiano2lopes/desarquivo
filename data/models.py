@@ -14,6 +14,7 @@ class CategoryID(str, Enum):
 
 class SourceID(str, Enum):
     desarquivo = "desarquivo"
+    tmdb = "tmdb"
     manual = "manual"
 
 
@@ -93,3 +94,15 @@ class NewsHighlightAccessory(BaseModel):
     more_link: str
 
     _make_absolute_url = validator("more_link", allow_reuse=True)(make_absolute_url)
+
+
+class CinemaOnTheaters(BaseModel):
+    title: str
+    summary: str
+
+    _normalize_title = validator("title", allow_reuse=True)(trim)
+    _normalize_summary = validator("summary", allow_reuse=True)(trim)
+
+
+class CinemaOnTheatersAccessory(BaseModel):
+    poster_image_link: str
