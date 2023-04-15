@@ -11,7 +11,7 @@ from data import Fact, CategoryID, SourceID, HighRotationMusic, ExtractorDim
 from extractor.core import (
     Extractor,
     ExtractionTargetURL,
-    fact_builder,
+    arquivo_fact_builder,
     ExtractionResult,
 )
 
@@ -164,7 +164,7 @@ class RadioComercialV1(Extractor):
             )
 
             for result in results:
-                yield fact_builder(
+                yield arquivo_fact_builder(
                     version_entry,
                     CategoryID.music_high_rotation,
                     SourceID.desarquivo,

@@ -90,7 +90,7 @@ class ExtractionResult:
     accessory_content: BaseModel | None
 
 
-def fact_builder(
+def arquivo_fact_builder(
     version_entry: VersionEntry,
     category: str,
     source: str,
