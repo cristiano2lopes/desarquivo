@@ -3,6 +3,8 @@ from .radio_comercial import *
 from .rtp import *
 from .publico import *
 from .tmdb import *
+from .record import *
+from .ojogo import *
 
 
 def setup_extractors():

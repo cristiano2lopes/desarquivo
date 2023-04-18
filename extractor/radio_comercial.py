@@ -190,7 +190,7 @@ class RadioComercialV1(Extractor):
             ) and version.dt.month == self.params.month:
                 archived_url = await self.arquivo.fetched_archived_url(version)
                 if archived_url is not None:
-                    music_facts = self.extract_music_high_rotation(
+                    music_facts = (
                         version, archived_url
                     )
                     for fact in music_facts:

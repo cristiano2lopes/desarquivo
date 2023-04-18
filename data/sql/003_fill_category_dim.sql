@@ -1,4 +1,5 @@
 INSERT OR IGNORE INTO category_dim (id, name) values ('news_highlight', 'Destaque');
+INSERT OR IGNORE INTO category_dim (id, name) values ('sports_highlight', 'Destaque Desporto');
 INSERT OR IGNORE INTO category_dim (id, name) values ('weather', 'Meteriologia');
 INSERT OR IGNORE INTO category_dim (id, name) values ('classic_web', 'Clássicos da Web');
 INSERT OR IGNORE INTO category_dim (id, name) values ('music_high_rotation', 'Em Rotação');

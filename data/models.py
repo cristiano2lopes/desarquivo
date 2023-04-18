@@ -10,6 +10,7 @@ class CategoryID(str, Enum):
     music_high_rotation = "music_high_rotation"
     cinema_on_theaters = "cinema_on_theaters"
     news_highlight = "news_highlight"
+    sports_highlight = "sports_highlight"
 
 
 class SourceID(str, Enum):
