@@ -47,5 +47,5 @@ CREATE TABLE fact (
     FOREIGN KEY (category_id) REFERENCES category_dim(id),
     FOREIGN KEY (source_id) REFERENCES source_dim(id),
     FOREIGN KEY (location_id) REFERENCES location_dim(id),
-    FOREIGN KEY (extractor_id) REFERENCES extractor_dim(id),
+    FOREIGN KEY (extractor_id) REFERENCES extractor_dim(id)
 );
