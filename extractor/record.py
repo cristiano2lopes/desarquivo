@@ -33,7 +33,7 @@ def extract_news_highlight_2005(content) -> [ExtractionResult]:
 
     table = d("table").filter(lambda i: d(this).attr("width") == "300")
     if table:
-        title = table("a").text()
+        title = table("a").text().strip()
         link = table("a").attr("href")
         summary = table("span.record").text()
 
@@ -65,7 +65,7 @@ def extract_news_highlight_2006(content) -> [ExtractionResult]:
 
     table = d(".tr_preto")
     if table:
-        title = table("a.v18b_red").text()
+        title = table("a.v18b_red").text().strip()
         link = table("a.v18b_red").attr("href")
         summary = table("td.v12_black").text()
 
@@ -97,7 +97,7 @@ def extract_news_highlight_2008(content) -> [ExtractionResult]:
 
     table = d("#tcontent1")
     if table:
-        title = table("a.tituleira18red1").text()
+        title = table("a.tituleira18red1").text().strip()
         link = table("a.tituleira18red1").attr("href")
         summary = table("td.apreto12n").text()
 
@@ -129,7 +129,7 @@ def extract_news_highlight_2011(content) -> [ExtractionResult]:
 
     table = d("#manchetesHome")
     if table:
-        title = table("div.titBlHoje a").text().replace("\n", " ").lower().capitalize()
+        title = table("div.titBlHoje a").text().replace("\n", " ").lower().capitalize().strip()
         link = table("div.titBlHoje a").attr("href")
         summary = table("a.hl2").text().replace("\n", " ").lower().capitalize()
 
@@ -164,7 +164,7 @@ def extract_news_highlight_2016(content) -> [ExtractionResult]:
     if table:
         for item in table:
             item_pq = pq(item)
-            title = item_pq("h1 a").text().replace("\n", " ").lower().capitalize()
+            title = item_pq("h1 a").text().replace("\n", " ").lower().capitalize().strip()
             link = item_pq("h1 a").attr("href")
             summary = item_pq("p").text().replace("\n", " ").lower().capitalize()
 
@@ -199,7 +199,7 @@ def extract_news_highlight_2017(content) -> [ExtractionResult]:
     if table:
         for item in table:
             item_pq = pq(item)
-            title = item_pq("a").text().replace("\n", " ").lower().capitalize()
+            title = item_pq("a").text().replace("\n", " ").lower().capitalize().strip()
             link = item_pq("a").attr("href")
             summary = table("p").text().replace("\n", " ").lower().capitalize()
 
